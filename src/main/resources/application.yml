@@ -1,0 +1,41 @@
+spring:
+  profiles:
+    active: local
+  devtools:
+    restart:
+      enabled: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER}
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+      hibernate:
+      # show_sql: true
+      format_sql: true
+  logging:
+    level:
+      org.hibernate.SQL: info
+      org.hibernate.type: info
+  servlet:
+    multipart:
+      enabled: true
+      maxFileSize: 1000MB
+      maxRequestSize: 1000MB
+
+
+jwt:
+  token:
+    secret: ${JWT_TOKEN_SECRET}
+
