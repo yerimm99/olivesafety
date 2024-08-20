@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.1.6'
+    id "org.sonarqube" version "5.0.0.4638"
 }
 
 group = 'org'
@@ -10,6 +11,13 @@ version = '0.0.1-SNAPSHOT'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "olivesafety_project_efbec061-da18-440a-816b-b1866d669bd2"
+        property "sonar.projectName", "project"
     }
 }
 
