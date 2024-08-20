@@ -23,11 +23,14 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            withSonarQubeEnv() {
-              sh "./gradlew sonar"
+        stage('SonarQube analysis') {
+            steps {
+                // mysonar = jenkins - System - SonarQube servers 이름
+                withSonarQubeEnv('mysonar') {
+                    sh './gradlew sonar'
+                }
             }
-          }
+        }
 
         stage('Gradle Jar Build') {
             steps {
