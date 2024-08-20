@@ -5,12 +5,11 @@ pipeline {
         // GitLab 저장소에서 소스 가져오기 위한 자격 증명
         GITLAB_CREDENTIALS_ID = 'gitlab'
 
-        // AWS ECR 레지스트리 관련 변수
-        AWS_REGION = 'ap-northeast-2'
-        ECR_REPOSITORY_NAME = 'olivesafety'
-        ECR_REPOSITORY_URI = '975050178695.dkr.ecr.ap-northeast-2.amazonaws.com'
-        ECR_LOGIN_COMMAND = "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}"
-        IMAGE_TAG = "${GIT_COMMIT}"
+        // Harbor 레지스트리 관련 변수
+        HARBOR_URL = 'harbor.joon-test.shop'
+        HARBOR_REPOSITORY_NAME = 'olivesafety'
+        HARBOR_REPOSITORY_URI = "${HARBOR_URL}/${HARBOR_REPOSITORY_NAME}/olivesafety"
+        IMAGE_TAG = 'latest'
     }
 
     stages {
@@ -24,42 +23,44 @@ pipeline {
             }
         }
 
+        stage('SonarQube analysis') {
+                    steps {
+                        // mysonar = jenkins - System - SonarQube servers 이름
+                        withSonarQubeEnv('mysonar') {
+                            sh './gradlew sonar'
+                        }
+                    }
+                }
 
-    stage('Gradle Jar Build') {
+        stage('Gradle Jar Build') {
             steps {
                 sh 'chmod +x gradlew'
                 sh './gradlew clean bootJar'
             }
             post {
-                    failure {
-                      echo 'Gradle jar build failure!'
-                    }
-                    success {
-                      echo 'Gradle jar build success!'
-                    }
-            }
-
-    }
-
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // ECR 레지스트리에 로그인
-                    sh "${ECR_LOGIN_COMMAND}"
-
-                    // Docker 이미지 빌드
-                    sh "docker build -t ${ECR_REPOSITORY_NAME}:${IMAGE_TAG} ."
+                failure {
+                    echo 'Gradle jar build failure!'
+                }
+                success {
+                    echo 'Gradle jar build success!'
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
                 script {
-                    // Docker 이미지 푸시
-                    sh "docker tag ${ECR_REPOSITORY_NAME}:${IMAGE_TAG} ${ECR_REPOSITORY_URI}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${ECR_REPOSITORY_URI}/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"
+                    // Docker 이미지 빌드
+                    sh "docker build -t ${HARBOR_REPOSITORY_NAME}:${IMAGE_TAG} ."
+
+                    // Docker 이미지 태그 추가
+                    sh "docker tag ${HARBOR_REPOSITORY_NAME}:${IMAGE_TAG} ${HARBOR_REPOSITORY_URI}:${IMAGE_TAG}"
+
+                    // Harbor 레지스트리에 로그인 및 Docker 이미지 푸시
+                    withCredentials([usernamePassword(credentialsId: 'harbor', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
+                        sh "echo ${HARBOR_PASSWORD} | docker login ${HARBOR_URL} --username ${HARBOR_USERNAME} --password-stdin"
+                        sh "docker push ${HARBOR_REPOSITORY_URI}:${IMAGE_TAG}"
+                    }
                 }
             }
         }
