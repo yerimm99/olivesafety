@@ -30,7 +30,7 @@ public class SpringSecurityConfig {
     private final JwtAuthenticationExceptionHandler exceptionFilter;
     private final RedisService redisService;
     private final TokenProvider tokenProvider;
-    private final UrlBasedCorsConfigurationSource corsConfigurationSource;
+    //private final UrlBasedCorsConfigurationSource corsConfigurationSource;
     private final ApiLoggingFilter apiLoggingFilter;
 
     @Value("${jwt.token.secret}")
@@ -56,7 +56,8 @@ public class SpringSecurityConfig {
                 .httpBasic().disable()//토큰 인증 방식으로 하기 위해서 HTTP 기본 인증 비활성화
                 .csrf().disable()//CSRF 공격 방어 기능 비활성화
                 .cors()
-                .configurationSource(corsConfigurationSource)
+                //.configurationSource(corsConfigurationSource)
+
 
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
