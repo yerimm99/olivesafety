@@ -64,6 +64,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Trigger 2nd Job') {
+                    steps {
+                        echo 'Trigger 2nd job...'
+                        build job: 'pipeline-for-manifest', wait:true
+                    }
+                }
     }
 
     post {
