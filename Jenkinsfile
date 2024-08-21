@@ -71,7 +71,7 @@ pipeline {
         stage('Login to Argo CD') {
             steps {
                 script {
-                    // Argo CD에 로그인
+                    // Argo CD에 로그인하고 sync
                     withCredentials([usernamePassword(credentialsId: 'argocd', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
                         sh "argocd login ${ARGOCD_SERVER} --username ${ARGOCD_USERNAME} --password ${ARGOCD_PASSWORD} --insecure"
                         sh "argocd app sync app"
