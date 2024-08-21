@@ -10,6 +10,9 @@ pipeline {
         HARBOR_REPOSITORY_NAME = 'olivesafety'
         HARBOR_REPOSITORY_URI = "${HARBOR_URL}/${HARBOR_REPOSITORY_NAME}/olivesafety"
         IMAGE_TAG = 'latest'
+
+        // Argo CD 관련 변수
+        ARGOCD_SERVER = 'argocd.joon-test.shop'  // 실제 Argo CD 서버 주소로 교체
     }
 
     stages {
@@ -65,12 +68,17 @@ pipeline {
             }
         }
 
-        stage('Trigger 2nd Job') {
-                    steps {
-                        echo 'Trigger 2nd job...'
-                        build job: 'pipeline-for-manifest', wait:true
+        stage('Login to Argo CD') {
+            steps {
+                script {
+                    // Argo CD에 로그인
+                    withCredentials([usernamePassword(credentialsId: 'argocd', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
+                        sh "argocd login ${ARGOCD_SERVER} --username ${ARGOCD_USERNAME} --password ${ARGOCD_PASSWORD} --insecure"
+                        sh "argocd app sync app"
                     }
                 }
+            }
+        }
     }
 
     post {
