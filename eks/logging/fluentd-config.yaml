@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: logging
+data:
+  fluent.conf: |
+    <source>
+      @type forward
+      port 24224
+      bind 0.0.0.0
+    </source>
+  
+    <label @FLUENT_LOG>
+      <match **>
+        @type elasticsearch
+        host elasticsearch.logging
+        port 9200
+        logstash_format true
+        include_timestamp true
+        type_name log
+      </match>
+    </label>

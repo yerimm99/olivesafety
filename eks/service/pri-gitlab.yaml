@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: gitlab-pri-tgb
+  namespace: cicd
+spec:
+  serviceRef:
+    name: gitlab-webservice-default
+    port: 8181
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-northeast-2:975050178695:targetgroup/k8s-cicd-gitlabre-25abdf1b70/c52a454f02ac3139
+  vpcID: vpc-0831b90c2113327bf
