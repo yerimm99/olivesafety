@@ -23,7 +23,6 @@ pipeline {
             }
         }
 
-<<<<<<< HEAD
         stage('SonarQube analysis') {
             steps {
                 // mysonar = jenkins - System - SonarQube servers 이름
@@ -33,8 +32,6 @@ pipeline {
             }
         }
 
-=======
->>>>>>> e421642 (cors)
         stage('Gradle Jar Build') {
             steps {
                 sh 'chmod +x gradlew'

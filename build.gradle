@@ -15,7 +15,6 @@ java {
     }
 }
 
-<<<<<<< HEAD
 sonar {
     properties {
         property "sonar.projectKey", "olivesafety_project_efbec061-da18-440a-816b-b1866d669bd2"
@@ -23,8 +22,6 @@ sonar {
     }
 }
 
-=======
->>>>>>> e421642 (cors)
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
