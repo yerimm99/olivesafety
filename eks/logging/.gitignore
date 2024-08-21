@@ -1,0 +1,21 @@
+<<<<<<< HEAD
+/kubectl
+/EFK.iml
+/awscliv2.zip
+.idea/
+aws/
+elasticsearch/
+kibana/
+loki/
+loki-stack/
+promtail/
+/tls.crt
+/tls.csr
+/tls.key
+=======
+./terraform/.terraform
+./terraform/.terraform.lock.hcl
+./terraform/*.tfstate
+./terraform/*.tfstate.backup
+terraform
+>>>>>>> 719cd0061a1480f930101f46bd6d742a5f889daf

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: logging
+  labels:
+    app: fluent-bit
+data:
+  fluent-bit.conf: |
+    [Service]
+        Flush         1
+        Daemon        off
+        Parsers_File  parsers.conf
+    @INCLUDE input-kubernetes.conf
+    @INCLUDE filter-kubernetes.conf
+    @INCLUDE output-fluentd.conf
+
+  input-kubernetes.conf: |
+    [Input]
+        Name      tail
+        Tag       kube.*
+        Path      /var/log/*.log
+        Parser    json
+        Tag       log        
+
+  filter-kubernetes.conf: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Merge_Log           On
+        K8S-Logging.Parser  On
+
+  output-fluentd.conf: |
+    [OUTPUT]
+        Name            forward
+        Match           *
+        Host            fluentd.logging
+        Port            24224
+
+  parsers.conf: |
+    [PARSER]
+        Name        docker
+        Format      json
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep   On

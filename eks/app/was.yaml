@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-was
+  labels:
+    app: spring-was
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spring-was
+  template:
+    metadata:
+      labels:
+        app: spring-was
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: pod
+                    operator: In
+                    values:
+                      - app
+      containers:
+        - name: spring-container
+          image: hyoungjoon/olivesafety4
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: DB_URL
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: DB_PASSWORD
+            - name: JWT_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: JWT_TOKEN_SECRET
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: REDIS_HOST
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: REDIS_PORT
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: DB_USERNAME
+            - name: DB_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: DB_DRIVER
+
+
+
+
+
+
+      

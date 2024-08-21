@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elasticsearch-service-account
+  namespace: logging
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: elasticsearch-cluster-role
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/exec", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors", "prometheuses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["logging.k8s.io"]
+    resources: ["logs"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: elasticsearch-cluster-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: elasticsearch-service-account
+    namespace: logging
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: elasticsearch-cluster-role
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: logging
+data:
+  elasticsearch.yaml: |
+    cluster.name: OliveSafety
+    network.host: 0.0.0.0
+    discovery.seed_hosts: ["elasticsearch-discovery"]
+    xpack.security.enabled: true
+    xpack.security.transport.ssl.enabled: false
+    xpack.security.http.ssl.enabled: false
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      serviceAccountName: elasticsearch-service-account
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:8.15.0
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: discovery.type
+              value: "single-node"
+            - name: ELASTIC_PASSWORD
+              value: "elastic-search"
+            - name: ES_JAVA_OPTS
+              value: "-Xms500m -Xmx1000m"
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elastic-data
+      volumes:
+        - name: elastic-data
+          emptyDir:
+            sizeLimit: 5Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - name: elasticsearch
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
+    - name: elasticsearch-ssl
+      port: 9300
+      protocol: TCP
+      targetPort: 9300
+  type: ClusterIP
