@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label'gradle'
+        }
+    }
 
     environment {
         // GitLab 저장소에서 소스 가져오기 위한 자격 증명
