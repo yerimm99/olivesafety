@@ -30,29 +30,21 @@ pipeline {
             }
         }
 
-        stage('SonarQube analysis') {
-            steps {
-                // mysonar = jenkins - System - SonarQube servers 이름
-                withSonarQubeEnv('mysonar') {
-                    sh './gradlew sonar'
-                }
-            }
-        }
-
         stage('Gradle Jar Build') {
             steps {
                 sh 'chmod +x gradlew'
                 sh './gradlew clean bootJar'
             }
-            post {
-                failure {
-                    echo 'Gradle jar build failure!'
-                }
-                success {
-                    echo 'Gradle jar build success!'
-                }
-            }
         }
+
+        stage('SonarQube analysis') {
+                    steps {
+                        // mysonar = jenkins - System - SonarQube servers 이름
+                        withSonarQubeEnv('mysonar') {
+                            sh './gradlew sonar'
+                        }
+                    }
+                }
 
         stage('Build and Push Docker Image') {
             steps {
