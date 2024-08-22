@@ -40,9 +40,7 @@ pipeline {
         }
 
         stage('SonarQube analysis') {
-            agent {
-                        label 'gradle'  // Docker 에이전트
-                    }
+            agent any
                     steps {
                         // mysonar = jenkins - System - SonarQube servers 이름
                         withSonarQubeEnv('mysonar') {
