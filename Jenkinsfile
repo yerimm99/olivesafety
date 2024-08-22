@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        node {
+        docker {
             label'gradle'
         }
     }
