@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            label'gradle'
+            image 'custom-gradle'
+            label 'gradle'
         }
     }
 
