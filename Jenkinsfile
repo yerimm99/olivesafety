@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-            label 'gradle'
-            }
+    agent none
 
     environment {
         // GitLab 저장소에서 소스 가져오기 위한 자격 증명
@@ -19,6 +17,9 @@ pipeline {
 
     stages {
         stage('Checkout') {
+            agent {
+                        label 'gradle'  // Docker 에이전트
+                    }
             steps {
                 // GitLab 저장소에서 소스 가져오기
                 checkout([$class: 'GitSCM',
@@ -29,6 +30,9 @@ pipeline {
         }
 
         stage('Gradle Jar Build') {
+            agent {
+                        label 'gradle'  // Docker 에이전트
+                    }
             steps {
                 sh 'chmod +x gradlew'
                 sh './gradlew clean bootJar'
@@ -36,6 +40,9 @@ pipeline {
         }
 
         stage('SonarQube analysis') {
+            agent {
+                        label 'gradle'  // Docker 에이전트
+                    }
                     steps {
                         // mysonar = jenkins - System - SonarQube servers 이름
                         withSonarQubeEnv('mysonar') {
@@ -45,6 +52,9 @@ pipeline {
                 }
 
         stage('Build and Push Docker Image') {
+            agent {
+                        label 'gradle'  // Docker 에이전트
+                    }
             steps {
                 script {
                     // Docker 이미지 빌드
@@ -63,6 +73,7 @@ pipeline {
         }
 
         stage('Login to Argo CD') {
+            agent any
             steps {
                 script {
                     // Argo CD에 로그인하고 sync
