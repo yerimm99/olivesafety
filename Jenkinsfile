@@ -65,6 +65,10 @@ pipeline {
         stage('Login to Argo CD') {
             steps {
                 script {
+                    sh "apt-get update"
+                    sh "apt-get install -y curl"
+                    sh "curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.7.1/argocd-linux-amd64"
+                    sh "chmod +x /usr/local/bin/argocd"
                     // Argo CD에 로그인하고 sync
                     withCredentials([usernamePassword(credentialsId: 'argocd', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
                         sh "argocd login ${ARGOCD_SERVER} --username ${ARGOCD_USERNAME} --password ${ARGOCD_PASSWORD} --insecure"
