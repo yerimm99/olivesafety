@@ -1,10 +1,7 @@
 pipeline {
     agent {
-        docker {
-            image 'custom-gradle'
             label 'gradle'
-        }
-    }
+            }
 
     environment {
         // GitLab 저장소에서 소스 가져오기 위한 자격 증명
