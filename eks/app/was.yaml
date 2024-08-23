@@ -36,11 +36,7 @@ spec:
               memory: "128Mi"
               cpu: "250m"
             limits:
-<<<<<<< Updated upstream
-              memory: "350Mi"
-=======
               memory: "512Mi"
->>>>>>> Stashed changes
               cpu: "500m"
           env:
             - name: DB_URL
