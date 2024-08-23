@@ -35,7 +35,25 @@ spring:
       maxRequestSize: 1000MB
 
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto: false
+    sns:
+      topic:
+        arn: ${AWS_SNS_ARN}
+    sqs:
+      queueUrl: ${AWS_SQS_URL}
+
+
+
 jwt:
   token:
     secret: ${JWT_TOKEN_SECRET}
+
 

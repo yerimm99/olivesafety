@@ -29,6 +29,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
 
+    //MQ
+    SNS_PUBLISH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SNS4001", "SNS 오류"),
+
+    //Order
+    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ORDER4001", "해당 주문을 찾을 수 없습니다."),
     //ITEM
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "ITEM4001", "해당 상품을 찾을 수 없습니다."),
     LACK_OF_STOCK(HttpStatus.NOT_FOUND, "ITEM4002", "재고가 부족합니다.");

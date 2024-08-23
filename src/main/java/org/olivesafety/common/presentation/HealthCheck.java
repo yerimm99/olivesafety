@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthCheck {
 
-    @GetMapping("/health")
+    @GetMapping("/")
     public String healthCheck() {
-        return "OK, healthy!3";
+        return "OK, healthy!";
     }
     private static final Logger logger = LoggerFactory.getLogger(HealthCheck.class);
 
