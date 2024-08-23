@@ -5,7 +5,6 @@ metadata:
   labels:
     app: spring-was
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: spring-was
@@ -23,6 +22,9 @@ spec:
                     operator: In
                     values:
                       - app
+      imagePullSecrets:
+        - name: harbor-registry-secret
+
       containers:
         - name: spring-container
           image: harbor.joon-test.shop/olivesafety/olivesafety
@@ -77,6 +79,32 @@ spec:
                 configMapKeyRef:
                   name: spring-configmap
                   key: DB_DRIVER
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  key: AWS_REGION
+                  name: spring-configmap
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_ACCESS_KEY
+                  name: spring-secret
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_SECRET_KEY
+                  name: spring-secret
+            - name: AWS_SNS_ARN
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_SNS_ARN
+                  name: spring-secret
+            - name: AWS_SQS_URL
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_SQS_URL
+                  name: spring-secret
+
 
 
 
