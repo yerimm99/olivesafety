@@ -25,7 +25,7 @@ spec:
                       - app
       containers:
         - name: spring-container
-          image: hyoungjoon/olivesafety4
+          image: harbor.joon-test.shop/olivesafety/olivesafety
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
