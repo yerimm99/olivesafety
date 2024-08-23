@@ -76,12 +76,13 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Pipeline succeeded!'
+            success {
+                slackSend (color: '#00FF00', message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' succeeded.")
+                echo 'Pipeline succeeded!'
+            }
+            failure {
+                slackSend (color: '#FF0000', message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' failed.")
+                echo 'Pipeline failed!'
+            }
         }
-
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
 }
