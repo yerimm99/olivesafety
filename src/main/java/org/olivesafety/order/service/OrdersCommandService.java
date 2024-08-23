@@ -2,6 +2,7 @@ package org.olivesafety.order.service;
 
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.PublishRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.olivesafety.common.exception.handler.ItemHandler;
@@ -19,9 +20,16 @@ import org.olivesafety.order.domain.OrdersItem;
 import org.olivesafety.order.domain.repository.OrdersItemRepository;
 import org.olivesafety.order.domain.repository.OrdersRepository;
 import org.olivesafety.order.dto.OrdersRequestDTO;
+import org.olivesafety.order.dto.OrdersResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -38,9 +46,8 @@ public class OrdersCommandService {
     private final OrdersItemRepository ordersItemRepository;
     private final CouponRepository couponRepository;
 
-    //@PersistenceContext
-    //private EntityManager entityManager;
 
+/*
     @Transactional
     public Orders create(OrdersRequestDTO.ordersAddDTO request, Member member) {
 
@@ -50,7 +57,7 @@ public class OrdersCommandService {
 
         // ordersItem, 연관관계 매핑, 판매 재고 업데이트
         Item item = itemRepository.findByIdWithLock(request.getId()).orElseThrow(()-> new ItemHandler(ErrorStatus.ITEM_NOT_FOUND));
-        //entityManager.refresh(item);
+        entityManager.refresh(item);
 
         // ordersItem 엔티티 생성 및 연관관계 매핑
         OrdersItem newordersItem = OrdersConverter.toordersItem(request, item.getPrice());
@@ -86,33 +93,34 @@ public class OrdersCommandService {
 
         return newOrders;
     }
-
+*/
     @Transactional
-    public Orders createOrder(OrdersRequestDTO.ordersAddDTO request, Member member) {
+    public void create(OrdersRequestDTO.ordersAddDTO request, Member member) {
 
-        // orders 엔티티 생성 및 연관관계 매핑
-        Orders newOrders = OrdersConverter.toorders(request, member);
-        ordersRepository.save(newOrders);
+        OrdersResponseDTO.OrderMessageDTO orderMessage = OrdersConverter.toOrderMessage(request, member.getId());
 
         // SNS 주제로 주문 생성 메시지 발행
-        publishOrderCreatedEvent(newOrders);
+        publishOrderCreatedEvent(orderMessage);
 
-        return newOrders;
+
     }
 
-    private void publishOrderCreatedEvent(Orders order) {
-        String message = "Order Created: ID=" + order.getId();
+
+    private void publishOrderCreatedEvent(OrdersResponseDTO.OrderMessageDTO orderMessageDTO) {
         try {
+            // 요청 객체와 memberId를 포함한 메시지 생성
+
+
+            String message = new ObjectMapper().writeValueAsString(orderMessageDTO);
+
             PublishRequest publishRequest = new PublishRequest()
                     .withTopicArn(snsTopicArn)
                     .withMessage(message)
                     .withMessageGroupId("OrderGroup")  // FIFO 주제에 필요한 MessageGroupId 추가
-                    .withMessageDeduplicationId(order.getId().toString());
+                    .withMessageDeduplicationId(UUID.randomUUID().toString());
 
             amazonSNS.publish(publishRequest);
-            log.info("Order creation event published to SNS: {}", message);
         } catch (Exception e) {
-            log.error("Failed to publish order creation event to SNS", e);
             throw new OrdersHandler(ErrorStatus.SNS_PUBLISH_FAILED);
         }
     }

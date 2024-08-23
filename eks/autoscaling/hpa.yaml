@@ -4,10 +4,10 @@ metadata:
   name: hpa
   namespace: app
 spec:
-  maxReplicas: 6
-  minReplicas: 1
+  maxReplicas: 5
+  minReplicas: 3
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: spring-was
-  targetCPUUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 70

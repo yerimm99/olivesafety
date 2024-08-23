@@ -1,6 +1,8 @@
 package org.olivesafety.order.dto;
 
 import lombok.Getter;
+import org.olivesafety.order.domain.PayType;
+
 import javax.validation.constraints.NotBlank;
 
 public class OrdersRequestDTO {

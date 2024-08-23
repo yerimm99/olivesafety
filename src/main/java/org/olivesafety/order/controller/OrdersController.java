@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.olivesafety.common.exception.handler.MemberHandler;
 import org.olivesafety.common.exception.status.ErrorStatus;
+import org.olivesafety.common.exception.status.SuccessStatus;
 import org.olivesafety.common.presentation.ApiResponse;
 import org.olivesafety.member.domain.Member;
 import org.olivesafety.member.service.MemberQueryService;
@@ -30,11 +31,11 @@ public class OrdersController {
     private final MemberQueryService memberQueryService;
 
     @PostMapping("/create")
-    public ApiResponse<OrdersResponseDTO.ordersAddResultDTO> orders(@RequestBody OrdersRequestDTO.ordersAddDTO request, Authentication authentication) {
+    public ApiResponse<?> orders(@RequestBody OrdersRequestDTO.ordersAddDTO request, Authentication authentication) {
         Member member = memberQueryService.findMemberById(Long.valueOf(authentication.getName().toString())).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        Orders orders = ordersCommandService.create(request, member);
+        ordersCommandService.create(request, member);
 
-        return ApiResponse.onSuccess(OrdersConverter.toordersAddResultDto(orders));
+        return ApiResponse.of(SuccessStatus._OK,"주문 완료");
     }
 }

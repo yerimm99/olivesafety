@@ -45,6 +45,29 @@ public class OrdersConverter {
                 .build();
     }
 
+    public static OrdersResponseDTO.OrderMessageDTO toOrderMessage(OrdersRequestDTO.ordersAddDTO request, Long memberId){
+
+        PayType payType = null;
+        switch (request.getPayType()) {
+            case "CARD":
+                payType = PayType.CARD;
+                break;
+            case "CASH":
+                payType = PayType.CASH;
+                break;
+        }
+        return OrdersResponseDTO.OrderMessageDTO.builder()
+                .memberId(memberId)
+                .itemId(request.getId())
+                .name(request.getName())
+                .phone(request.getPhone())
+                .payType(payType)
+                .amount(request.getAmount())
+                .build();
+
+
+    }
+
 
 }
 
