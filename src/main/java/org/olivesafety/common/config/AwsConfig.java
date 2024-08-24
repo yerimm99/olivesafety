@@ -23,17 +23,12 @@ public class AwsConfig {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-
-    private AWSCredentialsProvider awsCredentialsProvider() {
-        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
-    }
     @Bean
     public AmazonSQS amazonSQS() {
 
 
         return AmazonSQSClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(awsCredentialsProvider())
                 .build();
     }
 
@@ -42,7 +37,6 @@ public class AwsConfig {
 
         return AmazonSNSClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(awsCredentialsProvider())
                 .build();
     }
 
