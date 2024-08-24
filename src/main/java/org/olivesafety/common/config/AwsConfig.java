@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
+
 
 @Configuration
 public class AwsConfig {
+
+    private AWSCredentials awsCredentials;
 
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
@@ -23,12 +27,22 @@ public class AwsConfig {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    @PostConstruct
+    public void init() {
+        this.awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+    }
+
+    @Bean
+    public AWSCredentialsProvider awsCredentialsProvider() {
+        return new AWSStaticCredentialsProvider(awsCredentials);
+    }
     @Bean
     public AmazonSQS amazonSQS() {
 
 
         return AmazonSQSClientBuilder.standard()
                 .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
 
@@ -37,6 +51,7 @@ public class AwsConfig {
 
         return AmazonSNSClientBuilder.standard()
                 .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
 
