@@ -45,7 +45,7 @@ public class SqsOrderProcessor {
     @Value("${cloud.aws.sqs.queueUrl}")
     private String queueUrl;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 3000)
     @Transactional
     public void pollQueue() {
         try {
